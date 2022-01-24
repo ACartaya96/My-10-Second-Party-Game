@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class GameMode : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -18,12 +19,19 @@ public class GameMode : MonoBehaviour
 
     public GameObject prefab1;
 
+    AudioSource audioSource;
+    public AudioClip victory;
+    public AudioClip lost;
+
+
+
 
     public static GameMode instance {get; private set;}
 
     void Awake() {
         instance = this;
         scoreText.text = count.ToString();
+        audioSource = GetComponent<AudioSource>();
     }
     public void Update() {
         if(Input.GetKeyDown(KeyCode.R))
@@ -36,6 +44,7 @@ public class GameMode : MonoBehaviour
         scoreText.enabled = true;
         countText.enabled = true;
         Ball_Script.instance.hasClicked = false;
+
         StartCoroutine(Timer());
     }
     
@@ -72,7 +81,22 @@ public class GameMode : MonoBehaviour
         gameOver.enabled = true;
          Ball_Script.instance.hasClicked = true;
         gameOver.text = "Game Over";
-        yield return new WaitForSeconds(2f);
+        audioSource.Stop();
+        yield return new WaitForSeconds(1f);
+        if(count >= 1)
+        {
+            audioSource.PlayOneShot(victory);
+             gameOver.text = "You Win";
+             yield return new WaitForSeconds(1f);
+            
+        }
+        else
+        {
+             audioSource.PlayOneShot(lost);
+             gameOver.text = "You Lose";
+             yield return new WaitForSeconds(1f);
+           
+        }
         gameOver.text = "Your Score: " + scoreText.text;
     }
 }
